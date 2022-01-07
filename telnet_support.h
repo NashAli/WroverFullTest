@@ -426,6 +426,16 @@ void TelRunI2CBusScanTest() {
   LogToSD(AWhite + GetASCIITime() + ABrightBlue + " --> i2c test started.");
   ResponsePrompt(1, 3, 1); //Access Denied!, system prompt
 }
+void TelBatteryInfo(){
+   ResponsePrompt(0, 0, 2); //subsystem prompt
+  //uint16_t v = analogRead(35);
+  float battery_voltage = ((float)analogRead(35) / 4095.0) * 2.0 * 3.3 * (1100 / 1000.0);
+  String voltage = "Voltage :" + String(battery_voltage) + "V";
+  telnet.println( ABrightGreen + voltage + AReset);
+  ResponsePrompt(1, 0, 1); //OK,system prompt
+  
+}
+
 
 /*
 ********************************************  cancel
@@ -453,15 +463,15 @@ void TelSysHelp() {
   telnet.println(AGreen + " status" + AWhite + "       - returns complete status on wifi system.");
   telnet.println(AGreen + " log" + AWhite + "          - system log.");
   telnet.println(AGreen + " clr" + AWhite + "          - clears the screen.");
-  telnet.println(ARed + " sdcardinfo" + AWhite + "   - returns SD card info.");
-  telnet.println(ARed + " files" + AWhite + "        - list file system on machine.");
-  telnet.println(ARed + " list" + AWhite + "         - dumps file to screen.");
-  telnet.println(ARed + " mkdir" + AWhite + "        - creates a new directory.");
-  telnet.println(ARed + " rmdir" + AWhite + "        - deletes named directory.");
-  telnet.println(ARed + " rename" + AWhite + "       - renames a file.");
+  telnet.println(AGreen + " sdcardinfo" + AWhite + "   - returns SD card info.");
+  telnet.println(AGreen + " files" + AWhite + "        - list file system on machine.");
+  telnet.println(AGreen + " list" + AWhite + "         - dumps file to screen.");
+  telnet.println(AGreen + " mkdir" + AWhite + "        - creates a new directory.");
+  telnet.println(AGreen + " rmdir" + AWhite + "        - deletes named directory.");
+  telnet.println(AGreen + " rename" + AWhite + "       - renames a file.");
   telnet.println(ARed + " setpin" + AWhite + "       - sets a pin HIGH or LOW.");
   telnet.println(ARed + " getpin" + AWhite + "       - gets the value of a pin (H/L).");
-  telnet.println(ARed + " battery" + AWhite + "      - reports the status of the battery.");
+  telnet.println(AGreen + " battery" + AWhite + "      - reports the status of the battery.");
   telnet.println(ARed + " i2cdetect" + AWhite + "    - scans the i2c bus for devices.");
   telnet.println();
   telnet.println(ABrightWhite + "    Type" + ACyan + " [command]" + AYellow + "-" + ABrightGreen + "help" + AYellow + " / -" + ABrightGreen + "?" + ABrightBlue + " for more details." + AReset);
@@ -607,6 +617,13 @@ void ParseCommand(String command) {
   else if (command.startsWith("#")) {
     ResponsePrompt(1, 0, 1); //OK, system prompt - normal completion.
   }
+   else if (command == "battery" || command == "bat" || command == "voltage" || command == "volts") {
+    TelBatteryInfo();
+  }
+
+
+
+  
 
 }
 /*

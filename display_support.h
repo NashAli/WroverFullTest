@@ -139,14 +139,12 @@ void ShowWifi() {
   display1.setCursor(7, 15);
   display1.print("Wifi connected to");
   display1.setCursor(30, 25);
-  display1.print("IP Address:");
-  display1.setCursor(27, 35);
   display1.print(WiFi.localIP().toString());
-  display1.setCursor(35, 50);
+  display1.setCursor(35, 35);
   display1.print("RSSI: ");
   display1.println(WiFi.RSSI());
   display1.display();
-  delay(1000);
+  delay(2000);
 }
 
 /*
