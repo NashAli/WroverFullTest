@@ -33,7 +33,7 @@
 
 */
 
-//  DO NOT ALTER THE ORDER OF THESE INCLUDES 
+//  DO NOT ALTER THE ORDER OF THESE INCLUDES
 #include <Wire.h>
 #include <WiFi.h>                 //  Wifi
 #include <WiFiClient.h>           //  HTTP
@@ -55,14 +55,16 @@
 
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);     //  for testing & debug
   InitDisplay();
-  InitSDCard(5);
+  InitSDCard(SDCardSelect);
   ConfigNetwork();
   SetupTelnet();
+  String logthis = ACyan + "System started@:" + AWhite + GetASCIITime();
+  LogToSD(logthis);
+  ShowTime();
 }
 
-void loop() { 
- telnet.loop();
+void loop() {
+  telnet.loop();
 }

@@ -131,21 +131,9 @@ String stars_sym =  "\u2728";
 
 //  machine vars
 
-int XORG, YORG, XPOS, YPOS, XDEST, YDEST, XOFFSET, YOFFSET, SXHOME, SYHOME;
 bool SYSTEM_BUSY = false;     //  OS is busy.
-bool MachineRun = false;      //  a motor is cycling (X-Y-Z).
-bool LIMITS_FLAG = false;    //  a boundary has been breached.
-bool NeedleUp = false;        //  logic to manage the needle (Z) to keep it out of
-bool NeedleDown = false;      //  harms way when the fabric gantry is in motion.
-bool Forward = true;          //  direction logic for DRV8845
-bool CalGood = false;         //  calibration has been completed sucessfully.
-
 bool Verbosity = true;        //  setting for communications protocol. Application can control response type ALPHA/NUMERIC
-
-
 const int SDCardSelect = 5;   //  GPIO5 on esp32
-const int WorkLights = 34;    //  GPIO34 - work lights via the ULN2803A
-int MWAIT = 10;               //  motor wait timing
 
 // change your threshold value here
 const int touch_threshold = 20;
@@ -192,6 +180,7 @@ String GetASCIITime() {
   mt.replace("\n", "");
   return mt;
 }
+
 
 
 #endif

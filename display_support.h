@@ -109,12 +109,12 @@ void ShowBTStart() {
   display1.display();
   delay(2500);
   DrawBanner();
-  display1.setCursor(10, 20);
+  display1.setCursor(13, 20);
   display1.print("Bluetooth active!");
-  display1.setCursor(10, 35);
-  display1.print("If done.");
-  display1.setCursor(10, 50);
-  display1.print("Wait for auto-login.");
+  display1.setCursor(5, 35);
+  display1.print("If done. Please wait");
+  display1.setCursor(5, 50);
+  display1.print("for auto-login.");
   display1.display();
 }
 void ShowWifiCreds(String ssid, String passw) {

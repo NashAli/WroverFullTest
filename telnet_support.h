@@ -50,6 +50,10 @@
   mkdir
   rmdir
   rename
+  voltage
+  getpin
+  setpin
+  i2cdetect
 
   Subject to change, without notice!
 */
@@ -147,7 +151,7 @@ void TelNetScan() {
   int nn = WiFi.scanNetworks();
   ResponsePrompt(0, 0, 4); //subsystem prompt
   telnet.println( ABrightWhite + "Currently there are " + ABrightGreen + String(nn) + ABrightWhite + " networks in the neighbourhood" + AReset);
-  
+
   if (nn == 0) {
     //no networks found go AP
     telnet.println(ABrightRed + "No Local Networks Found? - Connect to AP address: 192.168.5.1");
@@ -418,22 +422,105 @@ void  TelSDCardInfo() {
 }
 
 /*
-   ***********************************************************  I2C Bus scan
+   ***********************************************************  ScanI2CBus is implemented - 9/21/2020
+  this has to be done before init sensor group sets the sensor availability so the system can ignore offline sensors
+  to manage performance and no bad data woes.  The i2c_scanner uses the return value of the Write.endTransmisstion to
+  see if a device did acknowledge to the address. This version is the Telnet version.
 */
-void TelRunI2CBusScanTest() {
+
+void TelI2CBusScan() {
   ResponsePrompt(1, 0, 2); //OK, subsystem prompt only
   telnet.println(ABrightYellow + "Running i2c bus scan!.. Standby." + AReset);
   LogToSD(AWhite + GetASCIITime() + ABrightBlue + " --> i2c test started.");
-  ResponsePrompt(1, 3, 1); //Access Denied!, system prompt
+
+  int lastRow = 50;
+  byte error, address;
+  int nDevices;
+  Wire.begin();
+  DrawBanner();
+  display1.setCursor(10, 15);
+  display1.print("I2C Bus Scan....");
+  display1.display();
+
+  for (address = 1; address < 127; address++) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    if (error == 0) {
+      DrawBanner();
+      display1.setCursor(10, 25);
+      display1.print("I2C at 0x");
+      telnet.print(ABrightGreen + "I2C device at 0x");
+      if (address < 0x10) {
+        display1.print("0");
+        telnet.print("0");
+      }
+      char charVal[4];
+      sprintf(charVal, "%04X", address);
+      telnet.println(charVal + AReset);
+      display1.print(address, HEX);
+      display1.print(" hex!");
+      display1.display();
+
+      if (address == 0x20) {
+        telnet.println(ABrightYellow + "PortExpander @" + ABrightBlue + " address" + ABrightCyan + " 0x20" + AReset);
+        display1.setCursor(10, 35);
+        display1.print("PortExpander");
+        display1.display();
+      }
+
+      else if (address == 0x3C) {
+        telnet.println(ABrightYellow + "OLED @" + ABrightBlue + " address" + ABrightCyan + " 0x3C" + AReset);
+        display1.setCursor(10, 35);
+        display1.print("OLED - Me!");
+        display1.display();
+      }
+
+      nDevices++;
+      delay(500);
+    } else if (error == 4) {
+      display1.setCursor(5, lastRow);
+      display1.print("Error at address 0x");
+      telnet.println(ABrightRed + "Error at address 0x");
+      if (address < 16) {
+        display1.print("0");
+        telnet.print("0");
+
+      }
+      char charVal[4];
+      sprintf(charVal, "%04X", address);
+      telnet.println(charVal + AReset);
+      display1.println(address, HEX);
+      display1.display();
+    }
+  }
+  if (nDevices == 0) {
+    DrawBanner();
+    display1.setCursor(10, lastRow);
+    display1.print("No I2C devices found");
+    telnet.print( ABrightRed + "No I2C devices found" + AReset);
+    display1.display();
+  } else {
+    display1.setCursor(10, lastRow);
+    display1.print("That's all. Done.");
+    telnet.println( ABrightWhite + "That's all. Done." + AReset);
+    display1.display();
+  }
+
+  ResponsePrompt(1, 0, 1); //OK!, system prompt
 }
-void TelBatteryInfo(){
-   ResponsePrompt(0, 0, 2); //subsystem prompt
+
+/*
+ ********************************** Telnet Battery Info
+*/
+
+
+void TelBatteryInfo() {
+  ResponsePrompt(0, 0, 2); //subsystem prompt
   //uint16_t v = analogRead(35);
   float battery_voltage = ((float)analogRead(35) / 4095.0) * 2.0 * 3.3 * (1100 / 1000.0);
   String voltage = "Voltage :" + String(battery_voltage) + "V";
   telnet.println( ABrightGreen + voltage + AReset);
   ResponsePrompt(1, 0, 1); //OK,system prompt
-  
 }
 
 
@@ -472,7 +559,7 @@ void TelSysHelp() {
   telnet.println(ARed + " setpin" + AWhite + "       - sets a pin HIGH or LOW.");
   telnet.println(ARed + " getpin" + AWhite + "       - gets the value of a pin (H/L).");
   telnet.println(AGreen + " battery" + AWhite + "      - reports the status of the battery.");
-  telnet.println(ARed + " i2cdetect" + AWhite + "    - scans the i2c bus for devices.");
+  telnet.println(AGreen + " i2cdetect" + AWhite + "    - scans the i2c bus for devices.");
   telnet.println();
   telnet.println(ABrightWhite + "    Type" + ACyan + " [command]" + AYellow + "-" + ABrightGreen + "help" + AYellow + " / -" + ABrightGreen + "?" + ABrightBlue + " for more details." + AReset);
   telnet.println();
@@ -617,14 +704,14 @@ void ParseCommand(String command) {
   else if (command.startsWith("#")) {
     ResponsePrompt(1, 0, 1); //OK, system prompt - normal completion.
   }
-   else if (command == "battery" || command == "bat" || command == "voltage" || command == "volts") {
+  else if (command == "battery" || command == "bat" || command == "voltage" || command == "volts") {
     TelBatteryInfo();
   }
 
-
-
-  
-
+  else if (command == "i2cdetect" || command == "i2c" || command == "devices" || command == "i2cscan") {
+    TelI2CBusScan();
+  }
+  // more goes here...
 }
 /*
  * *********************************  TELNET SETUP & FUNCTIONS ***********************************************
@@ -717,7 +804,7 @@ void SetupTelnet() {
     display1.print("service running");
     display1.display();
   } else {
-   ShowMessage("Will reboot...");
+    ShowMessage("Will reboot...");
   }
 }
 
