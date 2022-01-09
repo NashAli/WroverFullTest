@@ -518,7 +518,7 @@ void TelBatteryInfo() {
   ResponsePrompt(0, 0, 2); //subsystem prompt
   //uint16_t v = analogRead(35);
   float battery_voltage = ((float)analogRead(35) / 4095.0) * 2.0 * 3.3 * (1100 / 1000.0);
-  String voltage = "Voltage :" + String(battery_voltage) + "V";
+  String voltage = "Battery Voltage :" + String(battery_voltage) + "V";
   telnet.println( ABrightGreen + voltage + AReset);
   ResponsePrompt(1, 0, 1); //OK,system prompt
 }

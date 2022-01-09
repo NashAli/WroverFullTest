@@ -24,9 +24,9 @@
   SOFTWARE.
 
   This project uses the Devkit esp32 WROVER B module. TTGO T-Koala
-  See docs --> WroverB FullTest.pdf for more info.
+  See docs --> WroverB FullTest.pdf for more info. - (internal)
   I2C Device Listing
-  0x20 - MCP23017 Port Expander
+  0x20 - MCP23017 Port Expander(TBA)
   0x3C - OLED - used
 
 
@@ -55,9 +55,12 @@
 
 
 void setup() {
-  Serial.begin(115200);     //  for testing & debug
+  GreenLED(OFF);
+  SetPower(ON);           //  turn on oled & sd card.
+  delay(100);               //  give equiptment time to settle.
+  Serial.begin(115200);     //  for testing & debug.
   InitDisplay();
-  InitSDCard(SDCardSelect);
+  InitSDCard(SDCardSelect); //  GPIO04.
   ConfigNetwork();
   SetupTelnet();
   String logthis = ACyan + "System started@:" + AWhite + GetASCIITime();

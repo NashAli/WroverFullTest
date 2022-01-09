@@ -41,10 +41,10 @@
 //***********************************************************************
 //  DEFINES
 //***********************************************************************
-#define OFF 0
-#define ON 1
+#define OFF false
+#define ON true
 #define MCP1 0x20
-#define LED_BUILTIN 2   // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
+#define LED_BUILTIN 5   // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
 
 // Define MCP23017 registers values from datasheet
 #define IODIRA    0x00  // IO direction A - 1= input 0 = output - set as all INPUT 0xFF 
@@ -69,20 +69,16 @@
 #define OLATA     0x14  // Output latches A - all limit sw. - X,Y,Needle Position
 #define OLATB     0x15  // Output latches B  - stepper motor controllers
 
-//MCP23017 - MOTOR_CONTROLLER @ 0x20
-
-
+//MCP23017 - port expand @ 0x20
 
 //  MACHINE GLOBAL VARIABLES  ********************************************************
 
 String OSNAME = "MicroBOS V2.0";
 
-
-
 /*
    ANSI Terminal ESC sequences
 */
-String ADarkGrey ="\u001b[1;30m";
+String ADarkGrey = "\u001b[1;30m";
 String ABlack =  "\u001b[30m";
 String ARed =  "\u001b[31m";
 String AGreen =  "\u001b[32m";
@@ -133,8 +129,9 @@ String stars_sym =  "\u2728";
 
 bool SYSTEM_BUSY = false;     //  OS is busy.
 bool Verbosity = true;        //  setting for communications protocol. Application can control response type ALPHA/NUMERIC
-const int SDCardSelect = 5;   //  GPIO5 on esp32
-
+const int SDCardSelect = 4;   //  GPIO4 on esp32
+const int PWR_CTRL = 25;
+const int VBAT_PIN = 35;
 // change your threshold value here
 const int touch_threshold = 20;
 // variable for storing the touch pin temporary value
@@ -159,7 +156,7 @@ int addr = 0;
 String stream;
 String temp;
 String temp2;
-unsigned int interval = 30000;
+unsigned int interval = 30000;  //  bluetooth wait time.
 
 BluetoothSerial bt; //Object for Bluetooth
 IPAddress ip;
@@ -180,7 +177,32 @@ String GetASCIITime() {
   mt.replace("\n", "");
   return mt;
 }
-
-
+void GreenLED(bool p) {
+  if (p) {
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, HIGH);  //  set LED ON
+  } else {
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);  //  set LED OFF
+  }
+}
+void SetPower(bool p) {
+  if (p) {
+    pinMode(PWR_CTRL, OUTPUT);
+    digitalWrite(PWR_CTRL, LOW);  //  set PIN 1 ON - (3.3V switched)
+  } else {
+    pinMode(PWR_CTRL, OUTPUT);
+    digitalWrite(PWR_CTRL, HIGH);  //  set PIN 1 OFF - (3.3V switched)
+  }
+}
+/*
+ * These routines manage the MCP23017 port expander ic.(TBA)
+ */
+void SetPortPin(int pn, bool v){
+  
+}
+bool GetPortPin(int pn){
+  
+}
 
 #endif
