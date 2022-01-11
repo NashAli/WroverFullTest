@@ -25,7 +25,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
 
-  This project uses the Devkit esp32 WROVER B module. TTGO 
+  This project uses the Devkit esp32 WROVER B module. TTGO
   See docs for more info.
   I2C Device Listing
   0x20 - MCP23017 Port Expander

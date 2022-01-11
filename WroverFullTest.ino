@@ -53,12 +53,12 @@
 #include "network.h"              //  network
 #include "telnet_support.h"       //  telnet
 
-
 void setup() {
   GreenLED(OFF);
-  SetPower(ON);           //  turn on oled & sd card.
-  delay(100);               //  give equiptment time to settle.
+  SetAuxPower(ON);           //  turn on +5V oled & sd card.
+  delay(500);               //  give equiptment time to settle.
   Serial.begin(115200);     //  for testing & debug.
+  InitPortExpander();
   InitDisplay();
   InitSDCard(SDCardSelect); //  GPIO04.
   ConfigNetwork();

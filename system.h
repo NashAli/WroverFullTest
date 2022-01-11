@@ -34,7 +34,7 @@
 
 
 */
-
+#include <MCP23017.h>
 
 
 
@@ -129,7 +129,7 @@ String stars_sym =  "\u2728";
 
 bool SYSTEM_BUSY = false;     //  OS is busy.
 bool Verbosity = true;        //  setting for communications protocol. Application can control response type ALPHA/NUMERIC
-const int SDCardSelect = 4;   //  GPIO4 on esp32
+const int SDCardSelect = 4;   //  GPIO4 on T-Koala esp32
 const int PWR_CTRL = 25;
 const int VBAT_PIN = 35;
 // change your threshold value here
@@ -164,6 +164,23 @@ AsyncWebServer httpServer(80);
 WiFiClient client;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
+MCP23017 mcp = MCP23017(MCP1);
+
+/*
+ * converts a String to Integer value, m is the base. ie. 16 = hexadecimal
+ */
+ int StrToInt(String cpv, int m){
+  int iv;
+  return iv = strtoul(cpv.c_str(), 0, m);
+ }
+/*
+   Convert integer to hexadecimal string
+*/
+String IntToHexStr(int v) {
+  char hex_string[20];
+  sprintf(hex_string, "%2X", v); //convert number to hex
+  return hex_string;
+}
 
 /*
    *************************************  TIMESTAMP for logs.
@@ -186,7 +203,16 @@ void GreenLED(bool p) {
     digitalWrite(LED_BUILTIN, LOW);  //  set LED OFF
   }
 }
-void SetPower(bool p) {
+void RedLED(bool p) {
+  if (p) {
+    pinMode(15, OUTPUT);
+    digitalWrite(15, HIGH);  //  set LED ON
+  } else {
+    pinMode(15, OUTPUT);
+    digitalWrite(15, LOW);  //  set LED OFF
+  }
+}
+void SetAuxPower(bool p) {
   if (p) {
     pinMode(PWR_CTRL, OUTPUT);
     digitalWrite(PWR_CTRL, LOW);  //  set PIN 1 ON - (3.3V switched)
@@ -196,13 +222,46 @@ void SetPower(bool p) {
   }
 }
 /*
- * These routines manage the MCP23017 port expander ic.(TBA)
- */
-void SetPortPin(int pn, bool v){
-  
+   These routines manage the MCP23017 port expander ic.(TBA)
+*/
+void InitPortExpander() {
+  mcp.init();
+  mcp.portMode(MCP23017Port::A, 0);     //  Port A as outputs
+  mcp.portMode(MCP23017Port::B, 0);     //  Port B as outputs
+  mcp.writeRegister(MCP23017Register::GPIO_A, 0x00);  //  Reset port A
+  mcp.writeRegister(MCP23017Register::GPIO_B, 0x00);  //  Reset port B to default value()
 }
-bool GetPortPin(int pn){
-  
+
+void SetPortPin(int pn, bool v) {
+
 }
+
+bool GetPortPin(int pn) {
+  int comval = 0;
+  comval = mcp.readPort(MCP23017Port::A);
+
+}
+
+void SetPort(int pn, int v) {
+  if (pn == 1) {
+    mcp.writeRegister(MCP23017Register::GPIO_A, v);//  Set port A
+  }
+  else {
+    mcp.writeRegister(MCP23017Register::GPIO_B, v);  //  Set port B
+  }
+}
+/*
+   Returns with the value of the port as a hexadecimal string.
+*/
+String GetPort(int pn) {
+  int comval;
+  if (pn == 1) {
+    comval = mcp.readPort(MCP23017Port::A);
+  } else {
+    comval = mcp.readPort(MCP23017Port::B);
+  }
+  return IntToHexStr(comval);
+}
+
 
 #endif

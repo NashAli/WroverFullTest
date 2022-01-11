@@ -39,7 +39,7 @@
 */
 
 // SD Card
-#define SD_CS 4     //GPIO4 is available in this project.(orig. GPIO5 but T-Koala uses this pin for GREEN LED)
+#define SD_CS 4     //GPIO4 is available in this project.(orig. GPIO5 but T-Koala uses this pin for GREEN BUILTIN LED)
 
 #include "FS.h"     //  file system
 #include "SD.h"     //  SD Card
@@ -123,8 +123,8 @@ void InitSDCard(int cs)
 }
 
 /*
- * 
- */
+
+*/
 void StopSDCard()
 {
   SD.end();

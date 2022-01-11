@@ -61,9 +61,9 @@
 
 ESPTelnet telnet;       //  setup telnet
 
-
+//  SYSTEM ***************************************************************************************************
 /*
-   SYSTEM ***************************************************************************************************
+   System prompt
    rr - response required if '1'
    rt - 0 "OK", 1 "error", 2 "busy", 3 "Access Denied", 4 "Not Found", 5 "unknown".
    pt - prompt type (symbol) 0 - 4. none,top,machine,file,misc.
@@ -139,9 +139,10 @@ void ResponsePrompt(int rr, int rt, int ptr) {
       break;
   }
 }
+//  NETWORK *********************************************************************************************************
 /*
-  NETWORK *********************************************************************************************************
-  - needs work !!!
+
+  Net scan - needs work !!!
   now if you are connected via telnet via the AP then the "No networks found" might make sense
   but on the other hand, if connected via a Router then No Networks found, doesn't get there!!!
 */
@@ -225,8 +226,9 @@ void TelSysStat() {
   telnet.println(AReset + "Access Point Address: 192.168.5.1");
   ResponsePrompt(1, 0, 1); //OK,system prompt
 }
+//  FILESYSTEM  *******************************************************************************************
 /*
-   FILESYSTEM ***********************************************************************************
+   *************************************************************************************** FILES
    Resursive function to retreive sd card file listing
 */
 void TelFileDirectory(File dir, int numTabs) {
@@ -344,6 +346,7 @@ void TelListFile(String param) {
 }
 void TelRenameFile(String oldname, String newname) {
 
+  ResponsePrompt(0, 0, 1); // just system prompt
 }
 /*
   ********************************************************* Show the system log
@@ -420,7 +423,7 @@ void  TelSDCardInfo() {
   telnet.println("Used space: " + ub + " MB" );
   ResponsePrompt(1, 0, 1); // OK, system prompt
 }
-
+//  HARDWARE  ********************************************************************************************************
 /*
    ***********************************************************  ScanI2CBus is implemented - 9/21/2020
   this has to be done before init sensor group sets the sensor availability so the system can ignore offline sensors
@@ -505,22 +508,53 @@ void TelI2CBusScan() {
     telnet.println( ABrightWhite + "That's all. Done." + AReset);
     display1.display();
   }
-
   ResponsePrompt(1, 0, 1); //OK!, system prompt
 }
 
 /*
  ********************************** Telnet Battery Info
 */
-
-
 void TelBatteryInfo() {
   ResponsePrompt(0, 0, 2); //subsystem prompt
-  //uint16_t v = analogRead(35);
-  float battery_voltage = ((float)analogRead(35) / 4095.0) * 2.0 * 3.3 * (1100 / 1000.0);
-  String voltage = "Battery Voltage :" + String(battery_voltage) + "V";
-  telnet.println( ABrightGreen + voltage + AReset);
+  float battery_voltage = ((float)analogRead(VBAT_PIN) / 4095.0) * 2.0 * 3.3 * (1100 / 1000.0);
+  String voltage =  String(battery_voltage) + ABrightYellow + " Volts";
+  telnet.println(ABrightBlue + "Battery Voltage :" + ABrightGreen + voltage + AReset);
   ResponsePrompt(1, 0, 1); //OK,system prompt
+}
+/*
+  Gets the hexadecimal value of the specified port.
+*/
+void TelGetPort(String p) {
+  String pf = "";
+  if (p == "A" || p == "a") {
+    pf = GetPort(1);
+    telnet.println( ABrightCyan + "Port A:" + ABrightWhite + " 0x" + pf + AReset);
+  }
+  else {
+    pf = GetPort(2);
+    telnet.println( ABrightCyan + "Port B:"  + ABrightWhite + " 0x" + pf + AReset);
+  }
+  ResponsePrompt(1, 0, 1); //OK,system prompt
+}
+/*
+  Sets the hexadecimal value of a port.
+*/
+void TelSetPort(String p, int pv) {
+  if (p == "A" || p == "a") {
+    SetPort(1, pv);
+  } else {
+    SetPort(2, pv);
+  }
+  ResponsePrompt(0, 0, 1); // just system prompt
+}
+void TelGetPin(String param, String pin) {
+
+  ResponsePrompt(1, 0, 1); //OK, system prompt - normal completion.
+}
+
+void TelSetPin(String param, String pin, String pval) {
+
+  ResponsePrompt(1, 0, 1); //OK, system prompt - normal completion.
 }
 
 
@@ -532,6 +566,7 @@ void TelSysCancel(String param) {
   telnet.println("nothing to cancel");
   ResponsePrompt(1, 0, 1); //system prompt
 }
+
 /*
 **********************************  HELP SYSTEM ************************************************
 */
@@ -541,35 +576,109 @@ void TelSysHelp() {
   telnet.print( ABrightRed + ABold + "          " + pat_sym + " " + ASlowBlink + "microBOS" + AReset);
   telnet.println(ABrightYellow + ABold + tm_sym + AReset + ABrightGreen + "   V1.0" + AReset);
   telnet.println(" " + ABrightYellow + cr_sym + ABrightCyan + "ETM Studios" + ABrightGreen + " All Rights Reserved 2021/2022");
-
   telnet.println(ABrightYellow + "              Help system!" + AReset);
   telnet.println();
   telnet.println(AMagenta + "    Commands:");
   telnet.println();
-  telnet.println(AGreen + " netscan" + AWhite + "      - returns scan of network.");
-  telnet.println(AGreen + " status" + AWhite + "       - returns complete status on wifi system.");
-  telnet.println(AGreen + " log" + AWhite + "          - system log.");
-  telnet.println(AGreen + " clr" + AWhite + "          - clears the screen.");
-  telnet.println(AGreen + " sdcardinfo" + AWhite + "   - returns SD card info.");
-  telnet.println(AGreen + " files" + AWhite + "        - list file system on machine.");
-  telnet.println(AGreen + " list" + AWhite + "         - dumps file to screen.");
-  telnet.println(AGreen + " mkdir" + AWhite + "        - creates a new directory.");
-  telnet.println(AGreen + " rmdir" + AWhite + "        - deletes named directory.");
-  telnet.println(AGreen + " rename" + AWhite + "       - renames a file.");
-  telnet.println(ARed + " setpin" + AWhite + "       - sets a pin HIGH or LOW.");
-  telnet.println(ARed + " getpin" + AWhite + "       - gets the value of a pin (H/L).");
-  telnet.println(AGreen + " battery" + AWhite + "      - reports the status of the battery.");
-  telnet.println(AGreen + " i2cdetect" + AWhite + "    - scans the i2c bus for devices.");
+  telnet.println(AGreen + " netscan" + AWhite + "         - returns scan of network.");
+  telnet.println(AGreen + " status" + AWhite + "          - returns complete status on wifi system.");
+  telnet.println(AGreen + " log" + AWhite + "             - system log.");
+  telnet.println(AGreen + " clr/clear" + AWhite + "       - clears the screen.");
+  telnet.println(AGreen + " sdcardinfo" + AWhite + "      - returns SD card info.");
+  telnet.println(AGreen + " files" + AWhite + "           - list file system on machine.");
+  telnet.println(AGreen + " list" + AWhite + "            - dumps file to screen.");
+  telnet.println(AGreen + " mkdir" + AWhite + "           - creates a new directory.");
+  telnet.println(AGreen + " rmdir" + AWhite + "           - deletes named directory.");
+  telnet.println(AGreen + " rename" + AWhite + "          - renames a file.");
+  telnet.println(ARed +   " setpin" + AWhite + "          - sets a pin HIGH or LOW.");
+  telnet.println(AGreen + " setport" + AWhite + "         - sets a port value of the port expander(A/B port).");
+  telnet.println(ARed +   " getpin" + AWhite + "          - gets the value of a pin (H/L).");
+  telnet.println(AGreen + " getport" + AWhite + "         - gets the port value of the port expander (A/B port).");
+  telnet.println(AGreen + " battery/volts" + AWhite + "   - reports the status of the battery.");
+  telnet.println(AGreen + " i2cdetect" + AWhite + "       - scans the i2c bus for devices.");
   telnet.println();
   telnet.println(ABrightWhite + "    Type" + ACyan + " [command]" + AYellow + "-" + ABrightGreen + "help" + AYellow + " / -" + ABrightGreen + "?" + ABrightBlue + " for more details." + AReset);
   telnet.println();
   ResponsePrompt( 1, 0, 1); //system prompt
 }
+
+void TelSetPortHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  setport" + ABrightWhite + " - sets a port value of the port expander(A/B port).");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "setport-" + AMagenta + "<a:b>,<0-FF>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelGetPortHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  getport" + ABrightWhite + " - gets a port value of the port expander(A/B port).");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "getport-" + AMagenta + "<a:b>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelSetPinHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  setpin" + ABrightWhite + " - sets a pin value of the port expander(A/B port).");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "setpin-" + AMagenta + "<a:b>,<pin#>,<H:L>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelGetPinHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  getpin" + ABrightWhite + " - gets a pin value of the port expander(A/B port).");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "getpin-" + AMagenta + "<a:b>,<pin#>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelRemoveDirHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  rmdir" + ABrightWhite + "        - deletes named directory.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "rmdir-" + AMagenta + "<dirname>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelMakeDirHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  mkdir" + ABrightWhite + "        - makes named directory.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "mkdir-" + AMagenta + "<dirname>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelLogHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  log" + ABrightWhite + "        - displays log information.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "log-" + AMagenta + "<del:list>" + AReset);
+  ResponsePrompt( 1, 0, 1); //system prompt
+}
+void TelListFileHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  list" + ABrightWhite + "        - dumps file to screen.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "list-" + AMagenta + "<dir><filename>" + AReset);
+  ResponsePrompt(1, 0, 1);  //system prompt
+}
+void TelI2CHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  i2cdetect" + ABrightWhite + "        - scans the i2c bus for devices.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "i2c...-i2cdetect" + AReset);
+  ResponsePrompt(1, 0, 1);  //system prompt
+}
+void TelBatteryHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  battery" + ABrightWhite + "        - reports the status of the battery.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "battery/volts/bat/voltage" + AReset);
+  ResponsePrompt(1, 0, 1);  //system prompt
+}
+void TelRenameFileHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  list" + ABrightWhite + "        - dumps file contents to screen.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "rename-" + AMagenta + "<old filename>,<new filename>" + AReset);
+  ResponsePrompt(1, 0, 1);  //system prompt
+}
+void TelFilesHelp() {
+  telnet.println(ABrightBlue +   "         HELP");
+  telnet.println(ABrightYellow + "  files" + ABrightWhite + "        - list files to screen.");
+  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "files-" + AMagenta + "<dir>" + AReset);
+  ResponsePrompt(1, 0, 1);  //system prompt
+}
 /*
   ***************************************************** MISC  ******************************************
 */
 void TelQuit() {
-  telnet.println("Are you sure?");
+  telnet.println("Sorry there is no quitting!");
   ResponsePrompt(1, 0, 0); //no system prompt
 }
 
@@ -583,7 +692,7 @@ void ParseCommand(String command) {
     ResponsePrompt(1, 5, 1); //unknown - system prompt
   }
 
-  else if (command == "sdcardinfo" || command == "sdc" || command == "sdcard" || command == "sdci") {
+  else if (command == "sdcardinfo" || command == "sdc" || command == "sdcard" || command == "sdinfo") {
     TelSDCardInfo();
   }
 
@@ -595,7 +704,7 @@ void ParseCommand(String command) {
     TelSysStat();
   }
 
-  else if (command == "clr") {
+  else if (command == "clr" || command == "clear") {
     telnet.println(AClearScreen + AHomeCursor);
     ResponsePrompt(0, 0, 1);
   }
@@ -610,18 +719,14 @@ void ParseCommand(String command) {
       TelShowSysLogs();
     }
     else if (param == command || param == "?" || param == "help") {
-      ResponsePrompt(0, 0, 3);
-      telnet.println(ABrightYellow + "usage: log -<del:list>");
+      TelLogHelp();
     }
-    ResponsePrompt(1, 0, 1);
   }
 
   else if (command.startsWith("list")) {
     String param = command.substring(command.indexOf('-') + 1, command.length());
     if  (param == command || param == "?" || param == "help") {
-      ResponsePrompt(0, 0, 3);
-      telnet.println(ABrightYellow + "usage: list -<filename>");
-      ResponsePrompt(1, 0, 1);
+      TelListFileHelp();
     } else {
       ResponsePrompt(0, 0, 3);
       telnet.println(ABrightYellow + "Screen Dump FileName: " + ABrightCyan + param + AReset);
@@ -630,59 +735,53 @@ void ParseCommand(String command) {
   }
 
   else if (command.startsWith("mkdir")) {
-    ResponsePrompt(1, 0, 1);
     String param = command.substring(command.indexOf('-') + 1, command.length());
     if  (param == command || param == "?" || param == "help") {
-      ResponsePrompt(0, 0, 3);
-      telnet.println(ABrightYellow + "usage: mkdir -<dirname>");
-      //ResponsePrompt(1, 0, 1);
+      TelMakeDirHelp();
     } else {
       ResponsePrompt(0, 0, 3);
       telnet.println(ABrightYellow + "Create Directory: " + ABrightCyan + param + AReset);
       TelMakeDir(param);
     }
-    ResponsePrompt(1, 0, 1);  //OK, top level prompt
   }
 
   else if (command.startsWith("rmdir")) {
-    ResponsePrompt(1, 0, 1);
     String param = command.substring(command.indexOf('-') + 1, command.length());
     if  (param == command || param == "?" || param == "help") {
-      ResponsePrompt(0, 0, 3);
-      telnet.println(ABrightYellow + "usage: rmdir -<dirname>");
-      //ResponsePrompt(1, 0, 1);
+      TelRemoveDirHelp();
     } else {
       ResponsePrompt(0, 0, 3);
       telnet.println(ABrightYellow + "Remove Directory: " + ABrightCyan + param + AReset);
       TelRemoveDir(param);
     }
-    ResponsePrompt(1, 0, 1);  //OK, top level prompt
   }
 
   else if (command.startsWith("rename")) {
     ResponsePrompt(1, 0, 1);
-    String param = command.substring(command.indexOf(' ') + 1, command.length());
+    String param = command.substring(command.indexOf(' ') + 1, command.indexOf(',') - 1);
     String newname = command.substring(command.indexOf(',') + 1, command.length());
     if  (param == command || param == "?" || param == "help") {
-      ResponsePrompt(0, 0, 3);
-      telnet.println(ABrightYellow + "usage: rename <oldname,newname>");
-      ResponsePrompt(1, 0, 1);
+      TelRenameFileHelp();
     } else {
       ResponsePrompt(0, 0, 3);
       telnet.println(ABrightYellow + "Renamed: " + ABrightCyan + param + " to " + newname + AReset);
       TelRenameFile(param, newname);
       LogToSD(AWhite + GetASCIITime() + ABrightRed + " --> file rename - " + param + " to " + newname);
     }
-    ResponsePrompt(1, 0, 1);
   }
 
   else if (command.startsWith("files")) {
     String param = command.substring(command.indexOf('-') + 1, command.length());
-    TelSysFiles(param);
+    if (param == "?" || param == "help") {
+      TelFilesHelp();
+    } else {
+      TelSysFiles(param);
+    }
+
   }
 
   else if (command.startsWith("cancel")) {
-    ResponsePrompt(1, 0, 1);
+    ResponsePrompt(1, 0, 1);//OK, top level prompt
     String param = command.substring(command.indexOf('-') + 1, command.length());
     if  (param == command || param == "?" || param == "help") {
       ResponsePrompt(0, 0, 2);
@@ -694,7 +793,6 @@ void ParseCommand(String command) {
       TelSysCancel(param);
       LogToSD(AWhite + GetASCIITime() + ABrightBlue + " --- cancel job --> " + param);
     }
-    ResponsePrompt(1, 0, 1);
   }
 
   else if (command == "help" || command == "?" || command == "help?" || command == "Help" || command == "HELP" || command == "HELP!") {
@@ -708,13 +806,65 @@ void ParseCommand(String command) {
     TelBatteryInfo();
   }
 
-  else if (command == "i2cdetect" || command == "i2c" || command == "devices" || command == "i2cscan") {
-    TelI2CBusScan();
+  else if (command.startsWith("i2c")) {
+    String param = command.substring(command.indexOf('-') + 1, command.length());
+    if (param == "?" || param == "help") {
+      TelGetPortHelp();
+    } else {
+      TelI2CBusScan();
+    }
   }
-  // more goes here...
+
+  else if (command.startsWith("getport")) {
+    String param = command.substring(command.indexOf('-') + 1, command.length());
+    if (param == "?" || param == "help") {
+      TelGetPortHelp();
+      //ResponsePrompt(1, 0, 1); //OK, system prompt - normal completion.
+    } else {
+      TelGetPort(param);
+    }
+  }
+
+  else if (command.startsWith("setport")) {
+    String param = command.substring(command.indexOf('-') + 1, command.indexOf(',') - 1);
+    String apv = command.substring(command.indexOf(',') + 1, command.length());
+    //  converts hex string to integer value
+    int pv = StrToInt(apv, 16);
+    if (pv > 255) {
+      ResponsePrompt(0, 0, 2);
+      telnet.println(ABrightMagenta +  ABold + "Input value error - too large!" + AReset);
+    } else {
+      TelSetPort(param, pv);
+    }
+    if (param == "?" || param == "help") {
+      TelSetPortHelp();
+    }
+  }
+
+  else if (command.startsWith("getpin")) {
+    String param = command.substring(command.indexOf('-') + 1, command.indexOf(',') - 1);
+    String pin = command.substring(command.indexOf(',') + 1, command.indexOf(',') - 1);
+    if (param == "?" || param == "help") {
+      TelGetPinHelp();
+    } else {
+      TelGetPin(param, pin);
+    }
+  }
+
+  else if (command.startsWith("setpin")) {
+    String param = command.substring(command.indexOf('-') + 1, command.indexOf(',') - 1);
+    String pin = command.substring(command.indexOf(',') + 1, command.indexOf(',') - 1);
+    String pval = command.substring(command.indexOf(',') + 1, command.indexOf(',') - 1);
+    if (param == "?" || param == "help") {
+      TelSetPinHelp();
+    } else {
+      TelSetPin(param, pin, pval);
+    }
+  }
+  // more commands goes here...
 }
 /*
- * *********************************  TELNET SETUP & FUNCTIONS ***********************************************
+ * *********************************  TELNET SETUP & BASE FUNCTIONS ***********************************************
 */
 // callback functions for telnet events
 void OnTelnetConnect(String ip) {
