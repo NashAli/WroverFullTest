@@ -601,77 +601,100 @@ void TelSysHelp() {
   telnet.println();
   ResponsePrompt( 1, 0, 1); //system prompt
 }
-
 void TelSetPortHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  setport" + ABrightWhite + " - sets a port value of the port expander(A/B port).");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "setport-" + AMagenta + "<a:b>,<0-FF>" + AReset);
+  telnet.println(tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "setport" + ABrightWhite + tab + "- sets a port value of the port expander(A/B port).");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " setport-" + AMagenta + "<a:b>,<0-FF>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " nothing." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelGetPortHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  getport" + ABrightWhite + " - gets a port value of the port expander(A/B port).");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "getport-" + AMagenta + "<a:b>" + AReset);
+  telnet.println(tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "getport" + ABrightWhite + tab + "- gets a port value of the port expander(A/B port).");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " getport-" + AMagenta + "<a:b>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " port value in hexadecimal." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelSetPinHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  setpin" + ABrightWhite + " - sets a pin value of the port expander(A/B port).");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "setpin-" + AMagenta + "<a:b>,<pin#>,<H:L>" + AReset);
+  telnet.println(tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "setpin" + ABrightWhite + tab + "- sets a pin value of the port expander(A/B port).");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " setpin-" + AMagenta + "<a:b>,<pin#>,<H:L>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " nothing." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelGetPinHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  getpin" + ABrightWhite + " - gets a pin value of the port expander(A/B port).");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "getpin-" + AMagenta + "<a:b>,<pin#>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "getpin" + ABrightWhite + tab + "- gets a pin value of the port expander(A/B port).");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " getpin-" + AMagenta + "<a:b>,<pin#>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " a pin value (<H>:<L>)." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelRemoveDirHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  rmdir" + ABrightWhite + "        - deletes named directory.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "rmdir-" + AMagenta + "<dirname>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "rmdir" + ABrightWhite + tab + "- deletes named directory.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " rmdir-" + AMagenta + "<dirname>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " nothing." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelMakeDirHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  mkdir" + ABrightWhite + "        - makes named directory.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "mkdir-" + AMagenta + "<dirname>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "mkdir" + ABrightWhite + tab + "- makes named directory.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " mkdir-" + AMagenta + "<dirname>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " nothing." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelLogHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  log" + ABrightWhite + "        - displays log information.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "log-" + AMagenta + "<del:list>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "log" + ABrightWhite + tab + "- displays log information.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " log-" + AMagenta + "<del:list>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " log info." + AReset);
   ResponsePrompt( 1, 0, 1); //system prompt
 }
 void TelListFileHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  list" + ABrightWhite + "        - dumps file to screen.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "list-" + AMagenta + "<dir><filename>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "list" + ABrightWhite + tab + "- dumps file to screen.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " list-" + AMagenta + "<dir><filename>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " contents of a file." + AReset);
   ResponsePrompt(1, 0, 1);  //system prompt
 }
 void TelI2CHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  i2cdetect" + ABrightWhite + "        - scans the i2c bus for devices.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "i2c...-i2cdetect" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "i2cdetect" + ABrightWhite + tab + "- scans the i2c bus for devices.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " i2c...-i2cdetect" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " a list of i2c devices." + AReset);
   ResponsePrompt(1, 0, 1);  //system prompt
 }
 void TelBatteryHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  battery" + ABrightWhite + "        - reports the status of the battery.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "battery/volts/bat/voltage" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "battery" + ABrightWhite + tab + "- reports the status of the battery.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " battery/volts/bat/voltage" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " battery voltage" + AReset);
   ResponsePrompt(1, 0, 1);  //system prompt
 }
 void TelRenameFileHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  list" + ABrightWhite + "        - dumps file contents to screen.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "rename-" + AMagenta + "<old filename>,<new filename>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "rename" + ABrightWhite + tab + "- renames a file.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " rename-" + AMagenta + "<old filename>,<new filename>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " nothing." + AReset);
   ResponsePrompt(1, 0, 1);  //system prompt
 }
 void TelFilesHelp() {
-  telnet.println(ABrightBlue +   "         HELP");
-  telnet.println(ABrightYellow + "  files" + ABrightWhite + "        - list files to screen.");
-  telnet.println(ABrightGreen  + "  usage:" + ABrightCyan + "files-" + AMagenta + "<dir>" + AReset);
+  telnet.println(tab + tab + ABrightBlue + "COMMAND HELP");
+  telnet.println(ABrightYellow + tab + "files" + ABrightWhite + tab + "- list files to screen.");
+  telnet.println();
+  telnet.println(ABrightGreen  + tab + tab + "usage:" + ABrightCyan + " files-" + AMagenta + "<dir>" + AReset);
+  telnet.println(ABrightBlue  + tab + tab + "returns:" + ABrightRed + " a list of files." + AReset);
   ResponsePrompt(1, 0, 1);  //system prompt
 }
 /*
