@@ -73,57 +73,59 @@
 
 //  MACHINE GLOBAL VARIABLES  ********************************************************
 
-String OSNAME = "MicroBOS V2.0";
+String OSNAME = "MicroBOS V1.0";
 
 /*
    ANSI Terminal ESC sequences
 */
-String ADarkGrey = "\u001b[1;30m";
-String ABlack =  "\u001b[30m";
-String ARed =  "\u001b[31m";
-String AGreen =  "\u001b[32m";
-String AYellow =  "\u001b[33m";
-String ABlue =  "\u001b[34m";
-String AMagenta =  "\u001b[35m";
-String ACyan =  "\u001b[36m";
-String AWhite =  "\u001b[37m";
-String AReset =  "\u001b[0m";
-String ABrightBlack = "\u001b[30;1m";
-String ABrightRed = "\u001b[31;1m";
-String ABrightGreen = "\u001b[32;1m";
-String ABrightYellow = "\u001b[33;1m";
-String ABrightBlue = "\u001b[34;1m";
+String ADarkGrey =      "\u001b[1;30m";
+String ABlack =         "\u001b[30m";
+String ARed =           "\u001b[31m";
+String AGreen =         "\u001b[32m";
+String AYellow =        "\u001b[33m";
+String ABlue =          "\u001b[34m";
+String AMagenta =       "\u001b[35m";
+String ACyan =          "\u001b[36m";
+String AWhite =         "\u001b[37m";
+String AReset =         "\u001b[0m";
+String ABrightBlack =   "\u001b[30;1m";
+String ABrightRed =     "\u001b[31;1m";
+String ABrightGreen =   "\u001b[32;1m";
+String ABrightYellow =  "\u001b[33;1m";
+String ABrightBlue =    "\u001b[34;1m";
 String ABrightMagenta = "\u001b[35;1m";
-String ABrightCyan = "\u001b[36;1m";
-String ABrightWhite = "\u001b[37;1m";
+String ABrightCyan =    "\u001b[36;1m";
+String ABrightWhite =   "\u001b[37;1m";
 
-String ABold = "\u001b[1m";
-String AClearScreen = "\u001b[2J";
-String AHomeCursor = "\u001b[;H";
-String ASlowBlink = "\u001b[5m";
-String AReverse = "\u001b[7m";
-String AUnderline = "\u001b[4m";
-String AUpaline = "\u001b[1A";
-String tab = "\u0009";
-String nl = "\n";
-String cr = "\r";
+String ABold =          "\u001b[1m";
+String AClearScreen =   "\u001b[2J";
+String AHomeCursor =    "\u001b[;H";
+String ASlowBlink =     "\u001b[5m";
+String AReverse =       "\u001b[7m";
+String AUnderline =     "\u001b[4m";
+String AUpaline =       "\u001b[1A";
+
+String tab =            "\u0009";
+String nl =             "\n";
+String cr =             "\r";
 
 
 // unicode special symbols
-String revso_sym = "\u005c";
-String cr_sym =  "\u00A9";
-String pat_sym =  "\u1360";
-String tm_sym =  "\u2122";
-String anchor_sym =  "\u2693";
-String ard_sym =  "\u267E";
-String sball_sym =  "\u26BD";
-String bball_sym =  "\u26BE";
-String sman_sym =  "\u26C4";
-String psun_sym =  "\u26C5";
-String golf_sym =  "\u26F3";
-String sboat_sym =  "\u26F5";
-String tent_sym =  "\u26FA";
-String stars_sym =  "\u2728";
+
+String revso_sym =      "\u005c";
+String cr_sym =         "\u00A9";
+String pat_sym =        "\u1360";
+String tm_sym =         "\u2122";
+String anchor_sym =     "\u2693";
+String ard_sym =        "\u267E";
+String sball_sym =      "\u26BD";
+String bball_sym =      "\u26BE";
+String sman_sym =       "\u26C4";
+String psun_sym =       "\u26C5";
+String golf_sym =       "\u26F3";
+String sboat_sym =      "\u26F5";
+String tent_sym =       "\u26FA";
+String stars_sym =      "\u2728";
 
 //  machine vars
 
@@ -232,11 +234,12 @@ void InitPortExpander() {
   mcp.writeRegister(MCP23017Register::GPIO_B, 0x00);  //  Reset port B to default value()
 }
 
-void SetPortPin(int pn, bool v) {
+void SetPortPin(int port, int pp, bool v) {
+
 
 }
 
-bool GetPortPin(int pn) {
+bool GetPortPin(int port, int pp) {
   int comval = 0;
   comval = mcp.readPort(MCP23017Port::A);
 
@@ -253,7 +256,7 @@ void SetPort(int pn, int v) {
 /*
    Returns with the value of the port as a hexadecimal string.
 */
-String GetPort(int pn) {
+String GetPortString(int pn) {
   int comval;
   if (pn == 1) {
     comval = mcp.readPort(MCP23017Port::A);
@@ -261,6 +264,15 @@ String GetPort(int pn) {
     comval = mcp.readPort(MCP23017Port::B);
   }
   return IntToHexStr(comval);
+}
+int GetPortInteger(int pn) {
+  int comval;
+  if (pn == 1) {
+    comval = mcp.readPort(MCP23017Port::A);
+  } else {
+    comval = mcp.readPort(MCP23017Port::B);
+  }
+  return comval;
 }
 
 
